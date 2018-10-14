@@ -17,6 +17,7 @@
 	      var cont = document.getElementById('happyWidgetParent');
 	      var http = createRequestObject();
 	      if (http) {
+	      	http.addEventListener("load", transferComplete, false);
           http.open('get', link);
           http.onreadystatechange = function() {
             if (http.readyState == 4) {
@@ -28,17 +29,7 @@
           		var respBodyEl = resp.substring(startPos, endPos);
 
           		repsWrapEl.innerHTML = respBodyEl;
-
-							const scripts = repsWrapEl.querySelectorAll('#scripts script');
-							if (scripts) {
-								Array.apply(null, scripts).forEach((script, i) => {
-									const purePath = script.src.replace(location.href, '');
-									const actualPath = link + purePath;
-									// console.log(i, actualPath);
-									scriptsColl[i] = actualPath;
-									getCode(scriptsColl);
-								});
-							}
+          		cont.appendChild(repsWrapEl);
 
 							const styles = repsWrapEl.querySelectorAll('#styles link');
 							if (styles) {
@@ -47,37 +38,48 @@
 									const actualPath = link + purePath;
 									style.href = actualPath;
 								});
-							}
+							}          		
 
-              cont.appendChild(repsWrapEl);
+							const scripts = repsWrapEl.querySelectorAll('#scripts script');
+							if (scripts) {
+								Array.apply(null, scripts).forEach((script, i) => {
+									const purePath = script.src.replace(location.href, '');
+									scriptsColl[i] = link + purePath;
+								});
+							}              
             }
           }
           http.send(null);
 	      }
 		  } 
 
-		  function getCode(scripts) {
-		  	Object.keys(scripts).forEach(key => {
-		  		console.log(scripts[key]);
-
-
-		  		setTimeout(() => {
-			      var http = createRequestObject();
-			      if (http) {
-		          http.open('get', scripts[key]);
-		          http.onreadystatechange = function() {
-		            if (http.readyState == 4) {
-		            	console.log(scripts[key])
-		              eval(http.responseText);
-		            }
-		          }
-			        http.send(null);
-			      }
-		  		}, 3000);
-
-		  		
-		  	});
+		  function evalCode(url) {
+		  	console.log('url', url)
+	      var http = createRequestObject();
+	      if (http) {
+          http.open('get', url);
+          http.onreadystatechange = function() {
+            if (http.readyState == 4) {
+              eval(http.responseText);
+            }
+          }
+	        http.send(null);
+	      }
 		  } 		  
+
+		  function transferComplete() {
+		  	console.log('complete ' + JSON.stringify(scriptsColl));
+		  	evalCode(scriptsColl[0]);
+		  	setTimeout(() => {
+		  		evalCode(scriptsColl[1]);
+		  	}, 2000);
+		  	// Object.keys(scriptsColl).forEach(key => {
+		  	// 	console.log(key, scriptsColl[key]);
+
+
+	  		
+		  	// });
+		  }
     
 		  function createRequestObject() {
 		      try {

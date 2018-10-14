@@ -11,7 +11,7 @@
 		<div id="happyWidgetParent"></div>
 
 		<script> 
-
+			scriptsColl = {};
 
 		  function showContent(link) {
 	      var cont = document.getElementById('happyWidgetParent');
@@ -28,19 +28,15 @@
           		var respBodyEl = resp.substring(startPos, endPos);
 
           		repsWrapEl.innerHTML = respBodyEl;
-          		console.log('repsWrapEl', repsWrapEl);
 
 							const scripts = repsWrapEl.querySelectorAll('#scripts script');
 							if (scripts) {
-								Array.apply(null, scripts).forEach(script => {
+								Array.apply(null, scripts).forEach((script, i) => {
 									const purePath = script.src.replace(location.href, '');
 									const actualPath = link + purePath;
-									setTimeout(() => {
-										getCode(actualPath);
-									}, 2000);
-									console.log(actualPath);
-									// eval(actualCode);
-									// script.src = actualPath;
+									// console.log(i, actualPath);
+									scriptsColl[i] = actualPath;
+									getCode(scriptsColl);
 								});
 							}
 
@@ -60,20 +56,27 @@
 	      }
 		  } 
 
-		  function getCode(link) {
-	      var http = createRequestObject();
-	      if (http) {
-          http.open('get', link);
-          http.onreadystatechange = function() {
-            if (http.readyState == 4) {
-            	console.log(link)
-              setTimeout(() => {
-              	eval(http.responseText);
-              }, 1000);
-            }
-          }
-	        http.send(null);
-	      }
+		  function getCode(scripts) {
+		  	Object.keys(scripts).forEach(key => {
+		  		console.log(scripts[key]);
+
+
+		  		setTimeout(() => {
+			      var http = createRequestObject();
+			      if (http) {
+		          http.open('get', scripts[key]);
+		          http.onreadystatechange = function() {
+		            if (http.readyState == 4) {
+		            	console.log(scripts[key])
+		              eval(http.responseText);
+		            }
+		          }
+			        http.send(null);
+			      }
+		  		}, 3000);
+
+		  		
+		  	});
 		  } 		  
     
 		  function createRequestObject() {

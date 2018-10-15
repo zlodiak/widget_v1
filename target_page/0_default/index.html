@@ -14,12 +14,14 @@
 			scriptsColl = {};
 
 		  function showContent(link) {
+        console.log('================showContent');
 	      var cont = document.getElementById('happyWidgetParent');
 	      var http = createRequestObject();
 	      if (http) {
 	      	http.addEventListener("load", transferComplete, false);
           http.open('get', link);
           http.onreadystatechange = function() {
+            console.log('================onreadystatechange');
             if (http.readyState == 4) {
           		var resp = http.responseText;
           		var repsWrapEl = document.createElement('div');
@@ -52,6 +54,7 @@
               cont.appendChild(repsWrapEl);            
             }
           }
+
           http.send(null);
 	      }
 		  } 
@@ -63,6 +66,7 @@
           http.open('get', url);
           http.onreadystatechange = function() {
             if (http.readyState == 4) {
+              console.log('http.responseText', http.responseText.slice(0, 40))
               eval(http.responseText);
             }
           }
@@ -71,11 +75,32 @@
 		  } 		  
 
 		  function transferComplete() {
-		  	console.log('complete ' + JSON.stringify(scriptsColl));
-		  	evalCode(scriptsColl[0]);
-		  	setTimeout(() => {
-		  		evalCode(scriptsColl[1]);
-		  	}, 2000);
+        console.log('=============transferComplete');
+		  	// console.log('complete ' + JSON.stringify(scriptsColl));
+		  	// evalCode(scriptsColl[0]);
+		  	// setTimeout(() => {
+		  	// 	evalCode(scriptsColl[1]);
+		  	// }, 2000);
+
+        const codeColl = {};
+
+        if (Object.keys(scriptsColl).length < 2) { return; }
+
+        console.log('scriptsColl', scriptsColl)
+
+        new Promise((resolve, reject) => {
+          evalCode(scriptsColl[0]);
+          console.log(1);  
+          resolve(true);           
+        })  
+        .then(response => {
+          evalCode(scriptsColl[1]);
+          console.log(2);  
+        })
+        .catch(err => {
+          console.log('error');
+        })
+
 		  }
     
 		  function createRequestObject() {

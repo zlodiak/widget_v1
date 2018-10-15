@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<html lang=ru>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+      crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.rawgit.com/angular/zone.js/v0.8.11/dist/zone.js"></script>
+  </head>
+  
+  <body>
+
+    <button id='button1'>click</button>
+
+    <script> 
+      Zone.current.fork({
+        beforeTask: function () {
+          console.log('hi' + Zone.current.zoneName);
+        },
+        afterTask: function () {
+          console.log('bye' + Zone.current.zoneName);
+        },
+        enqueueTask: function(){
+          console.log('enqueue' + Zone.current.zoneName);
+        },
+        dequeueTask: function(){
+          console.log('dequeue' + Zone.current.zoneName);
+        },
+      }).run(function () {
+          Zone.current.zoneName = 'A';
+          $('#button1').click(function(){
+              console.log('button clicked');
+          });
+          setTimeout(function(){console.log('timeout1')}, 1000);
+          setTimeout(function(){console.log('timeout2')}, 2000);
+          setTimeout(function(){console.log('timeout3')}, 3000);
+      });           
+    </script>
+  </body>
+</html>

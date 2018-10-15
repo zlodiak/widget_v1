@@ -28,8 +28,7 @@
           		var endPos = resp.indexOf('</body>');
           		var respBodyEl = resp.substring(startPos, endPos);
 
-          		repsWrapEl.innerHTML = respBodyEl;
-          		cont.appendChild(repsWrapEl);
+          		repsWrapEl.innerHTML = respBodyEl;          		
 
 							const styles = repsWrapEl.querySelectorAll('#styles link');
 							if (styles) {
@@ -45,8 +44,12 @@
 								Array.apply(null, scripts).forEach((script, i) => {
 									const purePath = script.src.replace(location.href, '');
 									scriptsColl[i] = link + purePath;
+                  // script.src = scriptsColl[i];
+                  console.log('---', scriptsColl[i])
 								});
-							}              
+							}  
+
+              cont.appendChild(repsWrapEl);            
             }
           }
           http.send(null);
@@ -73,12 +76,6 @@
 		  	setTimeout(() => {
 		  		evalCode(scriptsColl[1]);
 		  	}, 2000);
-		  	// Object.keys(scriptsColl).forEach(key => {
-		  	// 	console.log(key, scriptsColl[key]);
-
-
-	  		
-		  	// });
 		  }
     
 		  function createRequestObject() {

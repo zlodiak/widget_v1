@@ -3,7 +3,7 @@
 <html lang=ru>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title></title>
+		<title>page for widget</title>
 		<link href="css/styles.css" rel="stylesheet">
 	</head>
 	
@@ -14,14 +14,12 @@
 			scriptsColl = {};
 
 		  function showContent(link) {
-        console.log('================showContent');
 	      var cont = document.getElementById('happyWidgetParent');
 	      var http = createRequestObject();
 	      if (http) {
 	      	http.addEventListener("load", transferComplete, false);
           http.open('get', link);
           http.onreadystatechange = function() {
-            console.log('================onreadystatechange');
             if (http.readyState == 4) {
           		var resp = http.responseText;
           		var repsWrapEl = document.createElement('div');
@@ -46,8 +44,7 @@
 								Array.apply(null, scripts).forEach((script, i) => {
 									const purePath = script.src.replace(location.href, '');
 									scriptsColl[i] = link + purePath;
-                  // script.src = scriptsColl[i];
-                  console.log('---', scriptsColl[i])
+                  script.src = scriptsColl[i];
 								});
 							}  
 
@@ -60,13 +57,11 @@
 		  } 
 
 		  function evalCode(url) {
-		  	console.log('url', url)
 	      var http = createRequestObject();
 	      if (http) {
           http.open('get', url);
           http.onreadystatechange = function() {
             if (http.readyState == 4) {
-              console.log('http.responseText', http.responseText.slice(0, 40))
               eval(http.responseText);
             }
           }
@@ -75,32 +70,9 @@
 		  } 		  
 
 		  function transferComplete() {
-        console.log('=============transferComplete');
-		  	// console.log('complete ' + JSON.stringify(scriptsColl));
-		  	// evalCode(scriptsColl[0]);
-		  	// setTimeout(() => {
-		  	// 	evalCode(scriptsColl[1]);
-		  	// }, 2000);
-
-        const codeColl = {};
-
-        if (Object.keys(scriptsColl).length < 2) { return; }
-
-        console.log('scriptsColl', scriptsColl)
-
-        new Promise((resolve, reject) => {
-          evalCode(scriptsColl[0]);
-          console.log(1);  
-          resolve(true);           
-        })  
-        .then(response => {
-          evalCode(scriptsColl[1]);
-          console.log(2);  
-        })
-        .catch(err => {
-          console.log('error');
-        })
-
+        Promise.resolve()
+          .then(x => setTimeout(() => { evalCode(scriptsColl[0]) }, 1000) )
+          .then(x => setTimeout(() => { evalCode(scriptsColl[1]) }, 2000) )
 		  }
     
 		  function createRequestObject() {
